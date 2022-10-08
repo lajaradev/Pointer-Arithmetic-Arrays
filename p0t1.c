@@ -18,14 +18,12 @@ int main(){
     f5 = fopen("exit_5_decimals.txt", "w");
 
     for(int i = 0; i < 10; i++){
-        printf("%.5f\n", num_doubles[i]);
         fprintf(f5, "%.5f\n", num_doubles[i]);
     }
 
     f10 = fopen("exit_10_decimals.txt", "w");
 
     for(int i = 0; i < 10; i++){
-        printf("%.10f\n", num_doubles[i]);
         fprintf(f10, "%.10f\n", num_doubles[i]);
     }
 

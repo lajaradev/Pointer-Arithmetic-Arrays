@@ -28,13 +28,13 @@ void readFileRows (double **matrixRR, char *file_entry, int *ROWS, int *COLUMNS)
     }
 }
 
-void readFileElements (double **matrizEE, char *file_entry, int *ROWS, int *COLUMNS){ // READ MATRIX BY ELEMENTS
+void readFileElements (double **matrixEE, char *file_entry, int *ROWS, int *COLUMNS){ // READ MATRIX BY ELEMENTS
     int accountant = 0;
     FILE *f = fopen(file_entry, "rb");
     if(f) {
         for (int i = 0; i < *ROWS; i++) {
             for (int j = 0; j < *COLUMNS; j++){
-                int bytes_read = fread(&matrizEE[i][j], sizeof(double), 1, f);  
+                int bytes_read = fread(&matrixEE[i][j], sizeof(double), 1, f);  
             }
             accountant = accountant + *COLUMNS;
         }
