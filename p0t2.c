@@ -1,6 +1,23 @@
+/*
+This program reads a binary file of 10 data type double.
+Store them in an matrix depending on the argv[].
+1º Write element by elemente
+2º Write row by row
+Write memory address of the firts and last element of each row (unsigned long long int)
+
+CONSOLE --> ./p0t2 file_entry rows columns
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+void argumentsOK(int argc){
+     if(argc != 4){
+        printf("./p0t2 file_entry rows columns\n");
+        exit(-1);
+    }
+}
 
 double** createMatrix(int *ROWS, int *COLUMNS){ // CREATE DYNAMIC MATRIX
     
@@ -99,6 +116,8 @@ void writeFileText (double **matrixRR, double **matrixEE, int *ROWS, int *COLUMN
 }
 
 int main ( int argc, char *argv[] ){ //CONSOLE --> ./p0t2 file_entry rows columns
+
+    argumentsOK(argc);
 
     int row = atoi(argv[2]);
     int col = atoi(argv[3]);

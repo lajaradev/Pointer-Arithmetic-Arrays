@@ -1,3 +1,10 @@
+/*
+This program reads a binary file of 10 data type double.
+Save and write each data in a line with 5 decimal and other file with 10 decimals.
+
+CONSOLE --> ./p0t1
+*/
+
 #include <stdio.h>
 
 int main(){

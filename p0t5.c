@@ -1,9 +1,17 @@
+/*
+Read from a binary file a total of 256 Kb in contiguous memory. Pointer Simple unsigned char
+Calculate the number of data that are less than or equal to a value (argv[])
+Elements can NOT be accessed using the array index.
+
+CONSOLE --> gcc p0t5.c -o p0t5 && ./p0t5 file_entry value
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
 void argumentsOK(int argc){
      if(argc != 3){
-        printf("./p0t5, filename, value\n");
+        printf("./p0t5 filename value\n");
         exit(-1);
     }
 }
