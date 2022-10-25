@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define N 1200
 
@@ -26,9 +27,9 @@ double *createArray(){ // CREATE DYNAMIC ARRAY
     return arrayIdentity, arrayResult;
 }
 
-void AddValueArrayIdentity(double *array){ // FILL ARRAY VALUE 1
+void AddValueArrayIdentity(double *arrayIdentity){ // FILL ARRAY VALUE 1
     for(int i = 0; i < N; i++){
-        array[i] = (double) 1;
+        arrayIdentity[i] = (double) 1;
     }
 }
 
@@ -36,7 +37,7 @@ void readFile (double **matrix, char *file_entry){ // READ MATRIX BY ROWS
     FILE *f = fopen(file_entry, "rb");
     if(f) { 
         for (int i = 0; i < N; i++) {
-            int bytes_read = fread(matrix[i], sizeof(unsigned char), N, f);  
+            int bytes_read = fread(matrix[i], sizeof(double), N, f);  
         }
         fclose(f);
     }
@@ -44,14 +45,14 @@ void readFile (double **matrix, char *file_entry){ // READ MATRIX BY ROWS
 
 void multiplication(double **matrix, double *arrayIdentity, double *arrayresult){
 
-    /* ARRAY(1x1200) x MATRIX(1200x1200) = RESULTANT VECTOR(1x1200) */
-
+    long double aux;
     for(int i = 0; i < N; i ++){
+        aux = 0;
         for(int j = 0; j < N; j ++){
-            arrayresult[i] += matrix[i][j] * arrayIdentity[i]; // MULTIPLICATION MATRIX * ARRAY IDENTITY
+            aux += matrix[i][j] * arrayIdentity[i];
         }
+        arrayresult[i] = aux;
     }
-
 }
 
 void absoluteValue(double *arrayResult){
@@ -59,12 +60,13 @@ void absoluteValue(double *arrayResult){
     double absHigher = 0;
     int index;
 
-    for (int i = 0 ; i < N ; i++ ){ //CALCULATE THE GREATEST ABSOLUTE
-        if( abs(arrayResult[i]) > absHigher ){ // IF THE ABSOLUTE OF X IS GREATER TO GREATER
-            absHigher = abs(arrayResult[i]); // SAVE THE ABSOLUTE IN VARIABLE 1
-            index = i;
+    for (int j = 0 ; j < N ; j ++ ){ //CALCULATE THE GREATEST ABSOLUTE
+        if( abs(arrayResult[j]) > absHigher ){ // IF THE ABSOLUTE OF X IS GREATER TO GREATER
+            absHigher = abs(arrayResult[j]); // SAVE THE ABSOLUTE IN VARIABLE 1
+            index = j;
         }
     }
+ 
     printf("INDEX: %i --> HIGHER ABS %.1f\n", index, absHigher);
 
 }
@@ -83,8 +85,10 @@ int main(int argc, char *argv[]){ // ./p0t10 mat.bin
     FILE *f = fopen(argv[1], "rb");
 
     multiplication(matrix, arrayIdentity, arrayResult);
-
+    
     absoluteValue(arrayResult);
+
+    free(matrix); free(arrayIdentity); free(arrayResult);
 
     return 0;
 }
