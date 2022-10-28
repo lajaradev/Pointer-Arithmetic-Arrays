@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 #define N 1200
 
@@ -43,15 +42,12 @@ void readFile (double **matrix, char *file_entry){ // READ MATRIX BY ROWS
     }
 }
 
-void multiplication(double **matrix, double *arrayIdentity, double *arrayresult){
+void multiplication(double **matrix, double *arrayIdentity, double *arrayResult){
 
-    long double aux;
     for(int i = 0; i < N; i ++){
-        aux = 0;
         for(int j = 0; j < N; j ++){
-            aux += matrix[i][j] * arrayIdentity[i];
+            arrayResult[i] += matrix[i][j] * arrayIdentity[i];
         }
-        arrayresult[i] = aux;
     }
 }
 
