@@ -14,7 +14,7 @@ CONSOLE --> ./p0t2 file_entry rows columns
 
 void argumentsOK(int argc){
      if(argc != 4){
-        printf("./p0t2 file_entry rows columns\n");
+        printf("./x02 file_entry rows columns\n");
         exit(-1);
     }
 }
