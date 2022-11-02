@@ -1,19 +1,12 @@
-/*
-This program reads a binary file of 10 data type double.
-Save and write each data in a line with 5 decimal and other file with 10 decimals.
-
-CONSOLE --> ./p0t1
-*/
-
 #include <stdio.h>
 
-int main(){
+int main(){ // CONSOLE --> gcc x01.c -o x01 && ./x01
 
     FILE *f, *f5, *f10; // f1 (reading), f5 (decimals), f10 (decimals)
-    f = fopen ("data10doubles.bin", "rb");
+    f = fopen ("doubles10data.bin", "rb");
     
     if (f == NULL){ // Check that file is not empty
-        printf("Can't be opened data10doubles.bin");
+        printf("Can't be opened doubles10data.bin");
         return -1;
     }
 

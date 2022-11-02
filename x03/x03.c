@@ -1,12 +1,3 @@
-/*
-Read from a binary file a square matrix of integers.
-Store the size of the matrix in a double pointer.
-The filename is passed by argv.
-Then we reduced the matrix.
-
-CONSOLE --> gcc p0t3.c -o p0t3 -lm && ./p0t3 file_entry
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +5,7 @@ CONSOLE --> gcc p0t3.c -o p0t3 -lm && ./p0t3 file_entry
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t3 file_entry\n");
+        printf("./x03 file_entry\n");
         exit(-1);
     }
 }
@@ -62,7 +53,7 @@ void writeTextFile (int **matrix, int *ROWS, int *COLUMNS){
     }
 }
 
-int main ( int argc, char *argv[] ){ //CONSOLE --> main file_entry
+int main ( int argc, char *argv[] ){ // CONSOLE --> gcc x03.c -o x03 -lm && ./x03 file1.bin
     
     argumentsOK(argc);
  

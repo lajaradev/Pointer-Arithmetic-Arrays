@@ -318,7 +318,7 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
         printf(" RUN TIME: %fs.\n ", run_times);
 }
 
-int main(int argc, char *argv[]){  // gcc processingImage.c -o processingImage -lm row col
+int main(int argc, char *argv[]){  // CONSOLE --> gcc processingImage.c -o processingImage -lm row col && ./processingImage lena512x512.bin average 512 512
 
     argumentsOK(argc); // ./processingImage lena512x512.raw average 512 512
 

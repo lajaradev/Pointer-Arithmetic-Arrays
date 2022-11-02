@@ -5,7 +5,7 @@
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t8 filename\n");
+        printf("./x08 filename\n");
         exit(-1);
     }
 }
@@ -93,7 +93,7 @@ void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltere
 
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x08.c -o x08 -lm && ./x08 lena512x512.bin
 
     argumentsOK(argc);
 

@@ -1,20 +1,9 @@
-/*
-Read from a binary file a total of 256 Kb in contiguous memory. 
-Pointer Simple unsigned char -> Calculate the number of data that are pair and show memory address
-Pointer Simple unsigned short int -> Calculate the number of data that are pair and show memory address
-Pointer Simple unsigned int -> Calculate the number of data that are pair and show memory address
-
-Elements can NOT be accessed using the array index.
-
-CONSOLE --> gcc p0t6.c -o p0t6 && ./p0t6 file_entry
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t6 filename\n");
+        printf("./x06 filename\n");
         exit(-1);
     }
 }
@@ -33,7 +22,7 @@ void readFile(unsigned char *array, char *fily_entry, int *SIZE){
     }
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x06.c -o x06 && ./x06 file2.bin
 
     argumentsOK(argc);
     

@@ -5,7 +5,7 @@
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t10 filename\n");
+        printf("./x10 filename\n");
         exit(-1);
     }
 }
@@ -67,7 +67,7 @@ void absoluteValue(double *arrayResult){
 
 }
 
-int main(int argc, char *argv[]){ // ./p0t10 mat.bin
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x10.c -o x10 && ./x10 mat.bin
     
     argumentsOK(argc);
 

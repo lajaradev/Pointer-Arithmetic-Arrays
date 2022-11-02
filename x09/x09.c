@@ -12,7 +12,7 @@ typedef struct times{ // CONTROL OF EXECUTION TIMES
 
 void argumentsOK(int argc){
      if(argc != 3){
-        printf("./p0t9 filename quicksort/bubble\n");
+        printf("./x09 filename quicksort/bubble\n");
         exit(-1);
     }
 }
@@ -175,7 +175,7 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
 
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x09.c -o x09 -lm && ./x09 lena512x512.bin
 
     argumentsOK(argc);
 

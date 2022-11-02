@@ -1,19 +1,10 @@
-/*
-Read a square matrix unsigned char and store it using double pointer.
-Store in a array the average of each row.
-Store in other array the average of each column.
-Write max and min.
-
-CONSOLE --> gcc p0t4.c -o p0t4 -lm && ./p0t4 file_entry
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t4 filename\n");
+        printf("./x04 filename\n");
         exit(-1);
     }
 }
@@ -115,7 +106,7 @@ int sizeMatrix(char *file_entry){
     return squareRoot;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x04.c -o x04 -lm && ./x04 file2.bin
 
     argumentsOK(argc);
       

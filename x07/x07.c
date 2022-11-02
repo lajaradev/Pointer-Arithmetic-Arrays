@@ -1,13 +1,3 @@
-/*
-Read from binary file a square matrix unsigned int. Store in double pointer
-Firts calculate average of firts row.
-After row by row count all elements higher that average:
-If the number is obtained is greater than half of the row size, this is the new average
-If the number is minor a 5% of the row size, ends process.
-
-CONSOLE --> gcc p0t7.c -o p0t7 && ./p0t7 file_entry
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +5,7 @@ CONSOLE --> gcc p0t7.c -o p0t7 && ./p0t7 file_entry
 
 void argumentsOK(int argc){
      if(argc != 2){
-        printf("./p0t7 filename\n");
+        printf("./x07 filename\n");
         exit(-1);
     }
 }
@@ -54,7 +44,7 @@ void readFile (unsigned int **matrix, char *file_entry, int *ROWS, int *COLUMNS)
     }
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){ // CONSOLE --> gcc x07.c -o x07 -lm && ./x07 file1.bin
 
     argumentsOK(argc);
 

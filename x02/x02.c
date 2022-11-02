@@ -1,13 +1,3 @@
-/*
-This program reads a binary file of 10 data type double.
-Store them in an matrix depending on the argv[].
-1º Write element by elemente
-2º Write row by row
-Write memory address of the firts and last element of each row (unsigned long long int)
-
-CONSOLE --> ./p0t2 file_entry rows columns
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -115,7 +105,7 @@ void writeFileText (double **matrixRR, double **matrixEE, int *ROWS, int *COLUMN
     fprintf(f, "\n\n");
 }
 
-int main ( int argc, char *argv[] ){ //CONSOLE --> ./p0t2 file_entry rows columns
+int main ( int argc, char *argv[] ){ // CONSOLE --> gcc x02.c -o x02 && ./x02 doubles10data.bin 2 5
 
     argumentsOK(argc);
 
