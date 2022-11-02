@@ -1,4 +1,4 @@
-<h1 align="center"> Read binaty file </h1>
+<h1 align="center"> Read binary file </h1>
 
 <h3> 
 C program that reads 10 data from a binary file
