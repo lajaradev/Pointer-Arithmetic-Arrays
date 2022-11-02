@@ -4,47 +4,41 @@
 #include <math.h>
 #include <time.h>
 
-typedef struct times{ // CONTROL OF EXECUTION TIMES
+/* Structure for the control of execution of times */
+typedef struct times{ 
     int create;
     clock_t run_start;
     clock_t run_end;
 }*Times;
 
-void argumentsOK(int argc){
-     if(argc != 3){
-        printf("./p0t8 filename mode(averageMatrix / medianMatrix\n");
+/* Function to validate the number of arguments */
+void argumentsOK(int argc){ 
+     if(argc != 5){
+        printf("./processingImage filename (average / median / sobel) row col\n");
         exit(-1);
     }
 }
 
-int sizeMatrix(char *file_entry){ //unsigned char = 1 bytes
-    
-    FILE *f = fopen(file_entry, "rb");
-
-    fseek(f, 0, SEEK_END ); // LET'S PUT THE CURSOR IN THE LAST POSITION
-    int bytes_total = ftell(f); // WHERE IS THE CURSOR
-    fseek(f, 0, SEEK_SET); // MOVE CURSOR TO FIRST POSITION, [0]
-    int squareRoot = sqrt(bytes_total);
-  
-    return squareRoot;
-}
-
-unsigned char** createMatrix(int *ROWS, int *COLUMNS){ // CREATE DYNAMIC MATRIX
+/* Function to create the two matrix dynamically */
+unsigned char** createMatrix(int *ROWS, int *COLUMNS){ 
     
     unsigned char **matrixOriginal;
     unsigned char **matrixFiltered;
     
-    matrixOriginal = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*));
+    matrixOriginal = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*)); // Reserve memory for rows
     matrixFiltered = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*));
 
     for (int i = 0; i < *ROWS; i++) {
-        matrixOriginal[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char));
+        matrixOriginal[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char)); // Reserve memory for columns
         matrixFiltered[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char));
     }
     
     return matrixOriginal, matrixFiltered;
 }
 
+/*  In this function we open the file that we indicate by argument.
+    Read the file by lines
+    Store it in an array */
 void readFile (unsigned char **matrix, char *file_entry, int *ROWS, int *COLUMNS){ // READ MATRIX BY ROWS
     FILE *f = fopen(file_entry, "rb");
     if(f) { 
@@ -55,19 +49,54 @@ void readFile (unsigned char **matrix, char *file_entry, int *ROWS, int *COLUMNS
     }
 }
 
+/* In this function we open a new file and write inside by rows the values of a matrix */
 void writeFile(unsigned char **matrix, int *ROWS, int *COLUMNS){
     FILE *f = fopen("filteredImage.raw", "wb");
     for (int i = 0; i < *ROWS; i++) {
-                size_t r1 = fwrite(matrix[i], sizeof(unsigned char), *COLUMNS, f);
-     }
-  fclose(f);
+        size_t r1 = fwrite(matrix[i], sizeof(unsigned char), *COLUMNS, f);
+    }
+    fclose(f);
 }
 
+/* This function is used to show us a few data from the matrix of the image that we read */
+void showMatrixOrigianl(unsigned char **matrixOriginal){
+    
+    /*SHOW ORIGINAL MATRIX 10 ELEMENTS*/ 
+
+    printf("\n\nORIGINAL MATRIX\n\n"); 
+    for(int i = 0; i < 20; i++){  
+        for(int j = 0; j < 20;j++){   
+            printf("%i   ",matrixOriginal[i][j]);  
+        }   
+        printf("\n"); 
+    } 
+        
+}
+
+/* This function is used to show us a few data of the matrix that we are going to write */
+void showMatrixFiltered(unsigned char **matrixFiltered){
+    
+   /*SHOW FILTERED MATRIX 10 ELEMENTS*/
+       
+    printf("\n\nFILTERED MATRIX \n\n"); 
+    for(int i = 0; i < 10; i++){  
+        for(int j = 0; j < 10;j++){   
+            printf("%i   ",matrixFiltered[i][j]);  
+        } 
+        printf("\n");   
+    }   
+    
+}
+
+/*  This function calculates the average of 9 elements.
+    First we copy the edges of the original to the filtered one.
+    Then from position [1][1] we store in variables the values of the positions around them.
+    We add those values and divide them by the number of elements, we write the result in the filtered matrix. */
 void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered, int *ROWS, int *COLUMNS, Times times){
 
         times -> run_start = clock();
        
-        /*SHOW ORIGINAL MATRIX 10 ELEMENTS*/ // printf("\n\nORIGINAL MATRIX\n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixOriginal[i][j]);  }   printf("\n"); }    
+       //showMatrixOrigianl(matrixOriginal);
         
         int topLeft, topCenter, topRight, centerLeft, centerCenter, centerRight, downLeft, downCenter, downRight, average; 
 
@@ -98,7 +127,7 @@ void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltere
             }
         }
         
-        /*SHOW FILTERED MATRIX 10 ELEMENTS*/ // printf("\n\nFILTERED MATRIX \n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixFiltered[i][j]);  } printf("\n");   }   
+        //showMatrixFiltered(matrixFiltered);
         
         writeFile(matrixFiltered, ROWS, COLUMNS);
 
@@ -109,6 +138,7 @@ void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltere
 
 }
 
+/* Function to swap values in a vector. */
 void exchangeQuicksort(int *V, unsigned int l, unsigned int r){ 
     int aux;
     aux = V[l];
@@ -116,7 +146,8 @@ void exchangeQuicksort(int *V, unsigned int l, unsigned int r){
     V[r] = aux;
 }
 
-void quicksort(int *V, unsigned int left, unsigned int right){ // SORT A ARRAY
+/* Function to sort values in a vector recursively. */
+void quicksort(int *V, unsigned int left, unsigned int right){
 
     unsigned int l, r, p;
     int pivot;
@@ -150,11 +181,15 @@ void quicksort(int *V, unsigned int left, unsigned int right){ // SORT A ARRAY
     }
 }
 
+/*  This function calculates the median of 9 elements.
+    First we copy the edges of the original to the filtered one.
+    Then from position [1][1] we store in a vector the values of the positions around them.
+    We sort that vector with Quicksort, pop out the one in the middle position [4], and write it to the filtered matrix. */
 void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered, int *ROWS, int *COLUMNS, char *opt, Times times){
 
          times -> run_start = clock();
 
-        /*SHOW ORIGINAL MATRIX 10 ELEMENTS*/ //printf("\n\nORIGINAL MATRIX\n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixOriginal[i][j]);  }   printf("\n"); }    
+        //showMatrixOriginal(matrixOriginal);
 
         int topLeft, topCenter, topRight, centerLeft, centerCenter, centerRight, downLeft, downCenter, downRight; 
         unsigned int median;
@@ -191,7 +226,7 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
             }
         }
         
-        /*SHOW FILTERED MATRIX 10 ELEMENTS*/ // printf("\n\nFILTERED MATRIX \n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixFiltered[i][j]);  } printf("\n");   }   
+        //showMatrixFiltered(matrixFiltered);  
        
         writeFile(matrixFiltered, ROWS, COLUMNS);
         
@@ -202,91 +237,127 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
 
 }
 
-void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered, int *ROWS, int *COLUMNS, Times times){
+/*  This function calculates the sobel of 9 elements.
+    Previously we have reserved memory for 2 additional rows and 2 additional columns.
+    Copy row/column 1 of the original matrix to 0 of the filtered one, and copy the entire original into the filtered one.
+    With the filtered values from position [1][1] we multiply by the fixed numbers and perform the formula.
+    Storing these values in the Original again. */
+void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered, int ROWS, int COLUMNS, Times times){
 
         times -> run_start = clock();
 
-        /*SHOW ORIGINAL MATRIX 10 ELEMENTS*/ //printf("\n\nORIGINAL MATRIX\n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixOriginal[i][j]);  }   printf("\n"); }    
+        //showMatrixOrigianl(matrixOriginal);
+               
+        for(int i = 1; i < ROWS - 1; i ++){ // row symmetry
+            matrixFiltered[i][0] = matrixOriginal[i - 1][1];
+            matrixFiltered[i][COLUMNS - 1] = matrixOriginal[i - 1][COLUMNS - 4];
+        }
 
-       for(int i = 0; i < *ROWS; i++){ // COPY BORDERS
-            memcpy(matrixFiltered[i], matrixOriginal[i], *ROWS * sizeof(char) );}
-            
-        for(int j = 0; j < *COLUMNS; j++){ // COPY BORDERS
-             memcpy(matrixFiltered[j], matrixOriginal[j], *COLUMNS * sizeof(char) );}
+        for(int j = 1; j < COLUMNS - 1; j ++){ // columns symmetry
+            matrixFiltered[0][j] = matrixOriginal[1][j - 1];
+            matrixFiltered[ROWS - 1][j] = matrixOriginal[ROWS - 4][j - 1];
+        }
 
-       for(int i = 1; i < *ROWS; i++){ // BEGIN THE BLUCLE TO DO THE CALCULATIONS
-            for (int j = 1; j < *COLUMNS; j++){
-          
-                if (  (i) > 0 && (j) > 0 && (i+1) < *ROWS && (j+1) < *COLUMNS  ) {
-                //VALUE OF C
-                int C = 
-                (matrixOriginal[i-1][j-1] * -1) +
-                (matrixOriginal[i-1][j]   *  0) +
-                (matrixOriginal[i-1][j+1] *  1) +
-                (matrixOriginal[i][j-1]   * -2) +
-                (matrixOriginal[i][j]     *  0) +
-                (matrixOriginal[i][j+1]   *  2) +
-                (matrixOriginal[i+1][j-1] * -1) +
-                (matrixOriginal[i+1][j]   *  0) +
-                (matrixOriginal[i+1][j+1] *  1);
-
-                //VALUE OF F
-                int F =
-                (matrixOriginal[i-1][j-1] * -1) +
-                (matrixOriginal[i-1][j]   * -2) +
-                (matrixOriginal[i-1][j+1] * -1) +
-                (matrixOriginal[i][j-1]   *  0) +
-                (matrixOriginal[i][j]     *  0) +
-                (matrixOriginal[i][j+1]   *  0) +
-                (matrixOriginal[i+1][j-1] *  1) +
-                (matrixOriginal[i+1][j]   *  2) +
-                (matrixOriginal[i+1][j+1] *  1);
-
-                int sobel = sqrt(pow(C,2) + pow(F,2)); // FORMULA
-                matrixFiltered[i][j] = sobel;                 
-                }       
+        for(int i = 1; i < ROWS - 1; i ++){ // copy values to filtered matrix 
+            for(int j = 1; j < COLUMNS - 1; j ++){
+                matrixFiltered[i][j] = matrixOriginal[i - 1][j - 1];
             }
-        }     
-        
-        /*SHOW FILTERED MATRIX 10 ELEMENTS*/ // printf("\n\nFILTERED MATRIX \n\n"); for(int i = 0; i < 10; i++){  for(int j = 0; j < 10;j++){   printf("%i   ",matrixFiltered[i][j]);  } printf("\n");   }   
-       
+        }
 
-        writeFile(matrixFiltered, ROWS, COLUMNS);
-        
+        matrixFiltered[0][0] = matrixFiltered[2][2]; // give values to the corners
+        matrixFiltered[0][COLUMNS - 1] = matrixFiltered[2][COLUMNS - 3];
+        matrixFiltered[ROWS - 1][0] = matrixFiltered[ROWS - 3][2];
+        matrixFiltered[ROWS - 1][COLUMNS - 1] = matrixFiltered[ROWS - 3][COLUMNS - 3];
+
+        //showMatrixFiltered(matrixFiltered);
+
+        for(int i = 1; i < ROWS -1; i ++){ // operations with the filtered matrix
+            for(int j = 1; j < COLUMNS-1; j ++){ 
+
+                // value of c
+                int C = 
+                (matrixFiltered[i-1][j-1] * -1) +
+                (matrixFiltered[i-1][j]   *  0) +
+                (matrixFiltered[i-1][j+1] *  1) +
+                (matrixFiltered[i][j-1]   * -2) +
+                (matrixFiltered[i][j]     *  0) +
+                (matrixFiltered[i][j+1]   *  2) +
+                (matrixFiltered[i+1][j-1] * -1) +
+                (matrixFiltered[i+1][j]   *  0) +
+                (matrixFiltered[i+1][j+1] *  1);
+
+                // value of f
+                int F =
+                (matrixFiltered[i-1][j-1] * -1) +
+                (matrixFiltered[i-1][j]   * -2) +
+                (matrixFiltered[i-1][j+1] * -1) +
+                (matrixFiltered[i][j-1]   *  0) +
+                (matrixFiltered[i][j]     *  0) +
+                (matrixFiltered[i][j+1]   *  0) +
+                (matrixFiltered[i+1][j-1] *  1) +
+                (matrixFiltered[i+1][j]   *  2) +
+                (matrixFiltered[i+1][j+1] *  1);
+
+                int sobel = sqrt(pow(C,2) + pow(F,2)); // formula
+                matrixOriginal[i - 1][j - 1] = sobel; // rewrite the original
+                 
+            }
+        }
+
+        //showMatrixOrigianl(matrixOriginal);
+    
+        FILE *f = fopen("filteredImage.raw", "wb");
+        for (int i = 0; i < ROWS -2; i++) {
+            size_t r1 = fwrite(matrixOriginal[i], sizeof(unsigned char), COLUMNS - 2, f);
+        }
+        fclose(f);
+
         times -> run_end = clock();
 
         double run_times = (double)(times -> run_end - times -> run_start) / CLOCKS_PER_SEC;
         printf(" RUN TIME: %fs.\n ", run_times);
 }
 
-int main(int argc, char *argv[]){  // gcc processingImage.c -o processingImage -lm
+int main(int argc, char *argv[]){  // gcc processingImage.c -o processingImage -lm row col
 
-    argumentsOK(argc); // ./processingImage lena512x512.raw average
+    argumentsOK(argc); // ./processingImage lena512x512.raw average 512 512
 
-    int row = sizeMatrix(argv[1]);
-    int col = row;  
+    int row = atoi(argv[3]); // Fetch the value and cast it to int
+    int col = atoi(argv[4]);
 
-    unsigned char **matrixOriginal = createMatrix(&row, &col);
-    unsigned char **matrixFiltered = createMatrix(&row, &col);
+    unsigned char **matrixOriginal = createMatrix(&row, &col); // Create original matrix
+    unsigned char **matrixFiltered;
 
-    Times times = (struct times*)malloc(sizeof(struct times));
+    Times times = (struct times*)malloc(sizeof(struct times)); // Initialize the time structure
 
-    FILE *f = fopen(argv[1], "rb"); //ABRIR ARCHIVO POR ARGUMENTO
+    FILE *f = fopen(argv[1], "rb"); // open file by argument
    
-    if(f){ // IF THE FILE.RAW EXISTS ...
-    
+    if(f){ // if the file.raw exists ...
+        
         times -> create = 0;
 
         readFile(matrixOriginal, argv[1], &row, &col);
        
-        if(strcmp(argv[2], "average") == 0){ // COMPARE THE TWO STRINGS, IF THEY ARE THE SAME THEN = 0
+        if(strcmp(argv[2], "average") == 0){ // compare two strings, if they are the same then = 0
+            matrixFiltered = createMatrix(&row, &col);
             averageMatrix(matrixOriginal, matrixFiltered, &row, &col, times);
 
         }else if(strcmp(argv[2], "median") == 0){
+            matrixFiltered = createMatrix(&row, &col);
             medianMatrix(matrixOriginal, matrixFiltered, &row, &col, argv[2], times);
 
         }else if(strcmp(argv[2], "sobel") == 0){
-            sobelMatrix(matrixOriginal, matrixFiltered, &row, &col, times);
+             
+            int row2 = row + 2; // reserve additional memory
+            int col2 = col + 2; 
+            
+            matrixFiltered = (unsigned char**)malloc(row2 * sizeof(unsigned char*));
+
+            for (int i = 0; i < row2; i++) {
+                matrixFiltered[i] = (unsigned char*)malloc(col2 * sizeof(unsigned char));
+            }
+
+            sobelMatrix(matrixOriginal, matrixFiltered, row2, col2, times);
 
         }else{
             printf("UNDEFINED FUNCTION");
@@ -296,7 +367,6 @@ int main(int argc, char *argv[]){  // gcc processingImage.c -o processingImage -
         printf("THE FILE.RAW ISN'T\n");
     }  
     
-       
     free(times);
     free(matrixOriginal);
     free(matrixFiltered);
