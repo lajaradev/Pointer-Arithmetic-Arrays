@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
-#define N 1200
+#define N 15000 // Size
 
+/* Function to validate the number of arguments */
 void argumentsOK(int argc){
      
-     if(argc != 1){
-        printf("./ite\n");
+     if(argc != 3){ // If argc is diferent of 5 argument --> error
+        printf("./ite file iterations\n");
         exit(-1);
     }
 
@@ -16,9 +18,9 @@ void argumentsOK(int argc){
 double **createMatrix(){ // CREATE DYNAMIC MATRIX
     
     double **matrix;
-    matrix = (double**)malloc(N * sizeof(double*));
+    matrix = (double**)malloc(N * sizeof(double*)); // Reserve memory for rows
     for(int i = 0; i < N; i ++){
-        matrix[i] = (double*)malloc(N * sizeof(double));
+        matrix[i] = (double*)malloc(N * sizeof(double)); // Reserve memory for columns
     }
     return matrix;
 
@@ -29,8 +31,8 @@ double *createArray(){ // CREATE DYNAMIC ARRAY
     double *arrayIdentity;
     double *arrayResult;
 
-    arrayIdentity = (double*)malloc(N * sizeof(double));
-    arrayResult = (double*)malloc(N * sizeof(double));
+    arrayIdentity = (double*)malloc(N * sizeof(double)); // Reserve memory for array
+    arrayResult = (double*)malloc(N * sizeof(double)); // Reserve memory for array
 
     return arrayIdentity, arrayResult;
 
@@ -39,11 +41,14 @@ double *createArray(){ // CREATE DYNAMIC ARRAY
 void AddValueArrayIdentity(double *arrayIdentity){ // FILL ARRAY VALUE 1
  
     for(int i = 0; i < N; i++){
-        arrayIdentity[i] = (double) 1.0;
+        arrayIdentity[i] = (double) 1; // All array = 1.0
     }
 
 }
 
+/*  In this function we open the file that we indicate by argument.
+    Read the file by lines
+    Store it in an matrix */
 void readFile (double **matrix, char *file_entry){ // READ MATRIX BY ROWS
  
     FILE *f = fopen(file_entry, "rb");
@@ -56,23 +61,17 @@ void readFile (double **matrix, char *file_entry){ // READ MATRIX BY ROWS
 
 }
 
-double absoluteValue(double *array){
-
-    double absHigher = 0;
-    int index;
-
-    for (int i = 0 ; i < N; i ++ ){ //CALCULATE THE GREATEST ABSOLUTE
-        if(fabs(array[i]) > absHigher ){ // IF THE ABSOLUTE OF X IS GREATER TO GREATER
-            absHigher = array[i]; // SAVE THE ABSOLUTE IN VARIABLE 1
-            index = i;
-        }
+/* In this function we open a new file and write inside by rows the values of a matrix */
+void writeFile(double **matrix, char *file_entry){
+    FILE *f = fopen(file_entry, "wb");
+    for (int i = 0; i < N; i++) {
+        size_t r1 = fwrite(matrix[i], sizeof(double), N, f);
     }
-    printf("INDEX: %i --> HIGHER ABS %f\n", index, absHigher);
-    return absHigher;
-    
+    fclose(f);
 }
 
-void showMatrix(double **matrix){  // SHOW ORIGINAL MATRIX 10 ELEMENTS
+/* This function is used to show us a few data from the matrix of the image that we read */
+void showMatrix(double **matrix){  // SHOW MATRIX 10 ELEMENTS
 
     printf("\n\nORIGINAL MATRIX\n\n"); 
     for(int i = 0; i < 10; i++){  
@@ -83,7 +82,8 @@ void showMatrix(double **matrix){  // SHOW ORIGINAL MATRIX 10 ELEMENTS
         
 }
 
-void showArray(double *array){  // SHOW ORIGINAL MATRIX 10 ELEMENTS
+/* This function is used to show us a few data from the array of array */
+void showArray(double *array){  // SHOW ARRAY 10 ELEMENTS
 
     printf("\nARRAY\n"); 
     for(int i = 0; i < 10; i++){  
@@ -92,6 +92,7 @@ void showArray(double *array){  // SHOW ORIGINAL MATRIX 10 ELEMENTS
         
 }
 
+/* Assign random values to the new matrix */
 void valueMatrix(double **matrix){ // GIVE VALUES TO THE MATRIX
     for(int i = 0; i < N; i++){
         for(int j = 0; j < N; j++){
@@ -106,77 +107,79 @@ void valueMatrix(double **matrix){ // GIVE VALUES TO THE MATRIX
     }
 }
 
+/* This function does the calculations of each iteration */
 void iterations(double **matrix, int m){
-    
-    double *arrayX = createArray();
-    AddValueArrayIdentity(arrayX);
-
-    double *arrayY = createArray();
-    int i = 0, j, t;
-    double absHigher;
-    double counter;
-
-    printf("ITERATION --> %i\n", i);
-    for(i = 0; i < N; i ++){ // FIRST ITERATION
-        arrayY[i] = 0;
-        for(j = 0; j < N; j ++){
-            arrayY[i] += matrix[i][j] * arrayX[i];
-        }
-    }
    
+    int i, j, k, absHigher = 0; //  Declaration of auxiliary variables that are used to perform different operations
+    double accumulate = 0; 
+    double absCompare = -DBL_MAX; // Is the value of maximum representable finite floating-point (double) number
     
-   for(t = 1; t < m; t ++){ // ITERATIONS LOOP
-    
-    printf("ITERATION --> %i\n", t);
-        for(i = 0; i < N; i ++){
-            arrayX[i] = 0;
+    double *x1 = createArray(); // Create a array
+    double *x2 = createArray(); // Create a new array
+    AddValueArrayIdentity(x2); // New array = 1
+
+    for(i = 0; i < N; i++){ // First iteration
+        accumulate = 0;
+        for(j = 0; j < N; j++){
+            accumulate += matrix[i][j] * x2[i]; // The result vector is the matrix * the unit vector
+        }
+        x1[i] = accumulate;
+    }
+ 
+    for(k = 1; k < m; k ++){ // Rest of iterations
+         
+        for(i = 0; i < N; i ++){ // Access each element of the matrix to make the product for each element of the previous vector
+            accumulate = 0;
             for(j = 0; j < N; j ++){
-                arrayX[i] += matrix[i][j] * arrayY[i];
+                accumulate += matrix[i][j]*x1[j]; // The result vector is the matrix * the vector
+            }
+            x2[i] = accumulate;
+        }
+
+        for(i = 0; i < N; i ++){ // Get the absolute value and compare it with the auxiliary variable that is updated
+            if(absCompare < fabs(x2[i])){
+                absCompare = fabs(x2[i]);
+                absHigher = i; // Tells us the position of the maximum value
             }
         }
-
-        absHigher = absoluteValue(arrayX); 
-        printf("VALUE: %f\n ", absHigher);
-
-        for(i = 0; i < N; i ++){
-            arrayY[i] = arrayX[i] / absHigher;
-        }
-      
        
-
-       showArray(arrayX); 
-
-  
+        if(absHigher > 25.0){ // Divide each position of the vector by the element with the largest absolute value.
+            for(i = 0; i < N; i ++){
+                x1[i] = x2[i] / x2[absHigher]; // Fill the vector x1 with the results to use it in the next iteration           
+            }
+        }
+       
+        printf("Max in iteration %i: %e (%i)\n", k, x2[absHigher], absHigher);  // Print the results
+        
+        absCompare=-DBL_MAX; // At the end of the loop we have to reset the value of our variable that finds the largest absolute value
     }
-    
-  
-    
-    free(arrayX); free(arrayY);
+
+    free(x1); // Free memory array
+    free(x2); // Free memory array
+
 }
 
-
-int main(int argc, char *argv[]){ // ./p0t10 mat.bin
+int main(int argc, char *argv[]){ // CONSOLE --> gcc iterativeSystem.c -o it && ./it newFile.bin 5
     
-    argumentsOK(argc);
+    argumentsOK(argc); // Funtion control arguments
 
-    double **matrix = createMatrix();
+    int m = atoi(argv[2]); // Fetch the value and cast it to int
+
+    double **matrix = createMatrix(); // Create new matrix
+    
+    FILE *f = fopen(argv[1], "rb"); // open file by argument
+
+    if(! f){ // if the file.bin no exists ...
+        printf("Create new file...\n"); 
+        valueMatrix(matrix); // Value random for a new matrix
+        writeFile(matrix, argv[1]); // Write the matrix
+    }
+     
+    readFile(matrix, argv[1]); // If file exists, read this file
+ 
+    iterations(matrix, m); // Do operations
    
-
-    valueMatrix(matrix);
-    showMatrix(matrix);
-    
-  
-    iterations(matrix, 5);
-    
-
-   /* readFile(matrix, argv[1]);
-    FILE *f = fopen(argv[1], "rb");
-
-    multiplication(matrix, arrayIdentity, arrayResult);
-    
-    absoluteValue(arrayResult);*/
-
-    free(matrix); 
+    free(matrix);  // Free memory matrix
 
     return 0;
 }

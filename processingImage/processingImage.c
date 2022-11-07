@@ -13,7 +13,7 @@ typedef struct times{
 
 /* Function to validate the number of arguments */
 void argumentsOK(int argc){ 
-     if(argc != 5){
+     if(argc != 5){ // If argc is diferent of 5 argument --> error
         printf("./processingImage filename (average / median / sobel) row col\n");
         exit(-1);
     }
@@ -33,12 +33,12 @@ unsigned char** createMatrix(int *ROWS, int *COLUMNS){
         matrixFiltered[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char));
     }
     
-    return matrixOriginal, matrixFiltered;
+    return matrixOriginal, matrixFiltered; 
 }
 
 /*  In this function we open the file that we indicate by argument.
     Read the file by lines
-    Store it in an array */
+    Store it in an matrix */
 void readFile (unsigned char **matrix, char *file_entry, int *ROWS, int *COLUMNS){ // READ MATRIX BY ROWS
     FILE *f = fopen(file_entry, "rb");
     if(f) { 
@@ -244,37 +244,37 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
     Storing these values in the Original again. */
 void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered, int ROWS, int COLUMNS, Times times){
 
-        times -> run_start = clock();
+        times -> run_start = clock(); // time start
 
         //showMatrixOrigianl(matrixOriginal);
                
-        for(int i = 1; i < ROWS - 1; i ++){ // row symmetry
-            matrixFiltered[i][0] = matrixOriginal[i - 1][1];
-            matrixFiltered[i][COLUMNS - 1] = matrixOriginal[i - 1][COLUMNS - 4];
+        for(int i = 1; i < ROWS - 1; i ++){ // In all rows (symmetry)
+            matrixFiltered[i][0] = matrixOriginal[i - 1][1]; // New column equal a position [i - 1][1] original
+            matrixFiltered[i][COLUMNS - 1] = matrixOriginal[i - 1][COLUMNS - 4]; // The same but int last column
         }
 
-        for(int j = 1; j < COLUMNS - 1; j ++){ // columns symmetry
-            matrixFiltered[0][j] = matrixOriginal[1][j - 1];
-            matrixFiltered[ROWS - 1][j] = matrixOriginal[ROWS - 4][j - 1];
+        for(int j = 1; j < COLUMNS - 1; j ++){ // In all columns (symmetry)
+            matrixFiltered[0][j] = matrixOriginal[1][j - 1]; // New row equal a position [1][j - 1] original
+            matrixFiltered[ROWS - 1][j] = matrixOriginal[ROWS - 4][j - 1]; // The same but int last row        }
         }
 
-        for(int i = 1; i < ROWS - 1; i ++){ // copy values to filtered matrix 
-            for(int j = 1; j < COLUMNS - 1; j ++){
+        for(int i = 1; i < ROWS - 1; i ++){ // Copy values to filtered matrix 
+            for(int j = 1; j < COLUMNS - 1; j ++){ 
                 matrixFiltered[i][j] = matrixOriginal[i - 1][j - 1];
             }
         }
 
-        matrixFiltered[0][0] = matrixFiltered[2][2]; // give values to the corners
-        matrixFiltered[0][COLUMNS - 1] = matrixFiltered[2][COLUMNS - 3];
+        matrixFiltered[0][0] = matrixFiltered[2][2]; // Give values to the corners
+        matrixFiltered[0][COLUMNS - 1] = matrixFiltered[2][COLUMNS - 3]; 
         matrixFiltered[ROWS - 1][0] = matrixFiltered[ROWS - 3][2];
         matrixFiltered[ROWS - 1][COLUMNS - 1] = matrixFiltered[ROWS - 3][COLUMNS - 3];
 
         //showMatrixFiltered(matrixFiltered);
 
-        for(int i = 1; i < ROWS -1; i ++){ // operations with the filtered matrix
+        for(int i = 1; i < ROWS -1; i ++){ // Operations with the filtered matrix
             for(int j = 1; j < COLUMNS-1; j ++){ 
 
-                // value of c
+                // Value of c
                 int C = 
                 (matrixFiltered[i-1][j-1] * -1) +
                 (matrixFiltered[i-1][j]   *  0) +
@@ -286,7 +286,7 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
                 (matrixFiltered[i+1][j]   *  0) +
                 (matrixFiltered[i+1][j+1] *  1);
 
-                // value of f
+                // Value of f
                 int F =
                 (matrixFiltered[i-1][j-1] * -1) +
                 (matrixFiltered[i-1][j]   * -2) +
@@ -306,19 +306,19 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
 
         //showMatrixOrigianl(matrixOriginal);
     
-        FILE *f = fopen("filteredImage.raw", "wb");
+        FILE *f = fopen("filteredImage.raw", "wb"); // write file
         for (int i = 0; i < ROWS -2; i++) {
             size_t r1 = fwrite(matrixOriginal[i], sizeof(unsigned char), COLUMNS - 2, f);
         }
         fclose(f);
 
-        times -> run_end = clock();
+        times -> run_end = clock(); // end time
 
         double run_times = (double)(times -> run_end - times -> run_start) / CLOCKS_PER_SEC;
         printf(" RUN TIME: %fs.\n ", run_times);
 }
 
-int main(int argc, char *argv[]){  // CONSOLE --> gcc processingImage.c -o processingImage -lm row col && ./processingImage lena512x512.bin average 512 512
+int main(int argc, char *argv[]){  // CONSOLE --> gcc processingImage.c -o processingImage -lm && ./processingImage lena512x512.raw average 512 512
 
     argumentsOK(argc); // ./processingImage lena512x512.raw average 512 512
 
@@ -334,30 +334,31 @@ int main(int argc, char *argv[]){  // CONSOLE --> gcc processingImage.c -o proce
    
     if(f){ // if the file.raw exists ...
         
-        times -> create = 0;
+        times -> create = 0; // run time
 
-        readFile(matrixOriginal, argv[1], &row, &col);
+        readFile(matrixOriginal, argv[1], &row, &col); // Function for read file
        
         if(strcmp(argv[2], "average") == 0){ // compare two strings, if they are the same then = 0
-            matrixFiltered = createMatrix(&row, &col);
-            averageMatrix(matrixOriginal, matrixFiltered, &row, &col, times);
+            matrixFiltered = createMatrix(&row, &col); // create a new matrix
+            averageMatrix(matrixOriginal, matrixFiltered, &row, &col, times); // funcion for calculate average of matrix
 
-        }else if(strcmp(argv[2], "median") == 0){
-            matrixFiltered = createMatrix(&row, &col);
-            medianMatrix(matrixOriginal, matrixFiltered, &row, &col, argv[2], times);
+        }else if(strcmp(argv[2], "median") == 0){ // compare two strings, if they are the same then = 0
+            matrixFiltered = createMatrix(&row, &col); // create a new matrix
+            medianMatrix(matrixOriginal, matrixFiltered, &row, &col, argv[2], times); // funcion for calculate median of matrix
 
-        }else if(strcmp(argv[2], "sobel") == 0){
+        }else if(strcmp(argv[2], "sobel") == 0){ // compare two strings, if they are the same then = 0
              
-            int row2 = row + 2; // reserve additional memory
-            int col2 = col + 2; 
+            row = row + 2; // reserve additional memory for rows
+            col = col + 2; // reserve additional memory for cols
             
-            matrixFiltered = (unsigned char**)malloc(row2 * sizeof(unsigned char*));
+            matrixFiltered = (unsigned char**)malloc(row * sizeof(unsigned char*)); // Reserve memory for rows
 
-            for (int i = 0; i < row2; i++) {
-                matrixFiltered[i] = (unsigned char*)malloc(col2 * sizeof(unsigned char));
+            for (int i = 0; i < row; i++) {
+                matrixFiltered[i] = (unsigned char*)malloc(col * sizeof(unsigned char)); // Reserve memory for columns
             }
 
-            sobelMatrix(matrixOriginal, matrixFiltered, row2, col2, times);
+            sobelMatrix(matrixOriginal, matrixFiltered, row, col, times); // funcion for calculate sobel of matrix
+
 
         }else{
             printf("UNDEFINED FUNCTION");
@@ -367,9 +368,9 @@ int main(int argc, char *argv[]){  // CONSOLE --> gcc processingImage.c -o proce
         printf("THE FILE.RAW ISN'T\n");
     }  
     
-    free(times);
-    free(matrixOriginal);
-    free(matrixFiltered);
+    free(times); // free memory
+    free(matrixOriginal); // free memory
+    free(matrixFiltered); // free memory
 
     return 0;
 }
