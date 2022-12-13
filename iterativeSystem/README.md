@@ -15,4 +15,7 @@ or pseudorandomly and will be between -50.0 < x < 50.0, so that the elements do 
 
 The number of iterations (m) and filenames will be passed in the execution statement. M will be a row-by-row reserved array, i.e. double pointer. The elements of the matrix and the vectors are of type
 double.
+
+gcc iterativeSystem.c -o it && ./it matrix.bin 5
+
 </h6>

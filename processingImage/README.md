@@ -11,4 +11,6 @@ Filtered by median (3 x 3 elements)
 Edge detection (SOBEL)
 
 In edge detection by SOBEL, those elements that do not have the 8 YES neighbors will be considered, performing symmetric extension for both rows (row -1 will be equal to 1, row N will be equal to N-2, where N is the number of rows) and for columns.
+
+CONSOLE --> gcc processingImage.c -o processingImage -lm && ./processingImage lena512x512.raw average 512 512
 </h6>

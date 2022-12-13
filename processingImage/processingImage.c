@@ -19,21 +19,19 @@ void argumentsOK(int argc){
     }
 }
 
-/* Function to create the two matrix dynamically */
+/* Function to create the matrix dynamically */
 unsigned char** createMatrix(int *ROWS, int *COLUMNS){ 
     
-    unsigned char **matrixOriginal;
-    unsigned char **matrixFiltered;
+    unsigned char **matrix;
     
-    matrixOriginal = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*)); // Reserve memory for rows
-    matrixFiltered = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*));
+    matrix = (unsigned char**)malloc(*ROWS * sizeof(unsigned char*)); // Reserve memory for rows
 
     for (int i = 0; i < *ROWS; i++) {
-        matrixOriginal[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char)); // Reserve memory for columns
-        matrixFiltered[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char));
+        matrix[i] = (unsigned char*)malloc(*COLUMNS * sizeof(unsigned char)); // Reserve memory for columns
+       
     }
     
-    return matrixOriginal, matrixFiltered; 
+    return matrix; 
 }
 
 /*  In this function we open the file that we indicate by argument.
@@ -58,35 +56,21 @@ void writeFile(unsigned char **matrix, int *ROWS, int *COLUMNS){
     fclose(f);
 }
 
-/* This function is used to show us a few data from the matrix of the image that we read */
-void showMatrixOrigianl(unsigned char **matrixOriginal){
+/* This function is used to show us a few data from the matrix of the image */
+void showMatrix(unsigned char **matrix){
     
     /*SHOW ORIGINAL MATRIX 10 ELEMENTS*/ 
 
-    printf("\n\nORIGINAL MATRIX\n\n"); 
-    for(int i = 0; i < 20; i++){  
-        for(int j = 0; j < 20;j++){   
-            printf("%i   ",matrixOriginal[i][j]);  
+    printf("\n\nMATRIX\n\n"); 
+    for(int i = 0; i < 10; i++){  
+        for(int j = 0; j < 10;j++){   
+            printf("%i   ",matrix[i][j]);  
         }   
         printf("\n"); 
     } 
         
 }
 
-/* This function is used to show us a few data of the matrix that we are going to write */
-void showMatrixFiltered(unsigned char **matrixFiltered){
-    
-   /*SHOW FILTERED MATRIX 10 ELEMENTS*/
-       
-    printf("\n\nFILTERED MATRIX \n\n"); 
-    for(int i = 0; i < 10; i++){  
-        for(int j = 0; j < 10;j++){   
-            printf("%i   ",matrixFiltered[i][j]);  
-        } 
-        printf("\n");   
-    }   
-    
-}
 
 /*  This function calculates the average of 9 elements.
     First we copy the edges of the original to the filtered one.
@@ -96,7 +80,7 @@ void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltere
 
         times -> run_start = clock();
        
-       //showMatrixOrigianl(matrixOriginal);
+        //showMatrix(matrixOriginal);
         
         int topLeft, topCenter, topRight, centerLeft, centerCenter, centerRight, downLeft, downCenter, downRight, average; 
 
@@ -127,7 +111,7 @@ void averageMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltere
             }
         }
         
-        //showMatrixFiltered(matrixFiltered);
+        //showMatrix(matrixFiltered);
         
         writeFile(matrixFiltered, ROWS, COLUMNS);
 
@@ -189,7 +173,7 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
 
          times -> run_start = clock();
 
-        //showMatrixOriginal(matrixOriginal);
+        //showMatrix(matrixOriginal);
 
         int topLeft, topCenter, topRight, centerLeft, centerCenter, centerRight, downLeft, downCenter, downRight; 
         unsigned int median;
@@ -226,7 +210,7 @@ void medianMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered
             }
         }
         
-        //showMatrixFiltered(matrixFiltered);  
+        //showMatrix(matrixFiltered);  
        
         writeFile(matrixFiltered, ROWS, COLUMNS);
         
@@ -246,7 +230,7 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
 
         times -> run_start = clock(); // time start
 
-        //showMatrixOrigianl(matrixOriginal);
+        //showMatrix(matrixOriginal);
                
         for(int i = 1; i < ROWS - 1; i ++){ // In all rows (symmetry)
             matrixFiltered[i][0] = matrixOriginal[i - 1][1]; // New column equal a position [i - 1][1] original
@@ -269,7 +253,7 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
         matrixFiltered[ROWS - 1][0] = matrixFiltered[ROWS - 3][2];
         matrixFiltered[ROWS - 1][COLUMNS - 1] = matrixFiltered[ROWS - 3][COLUMNS - 3];
 
-        //showMatrixFiltered(matrixFiltered);
+        //showMatrix(matrixFiltered);
 
         for(int i = 1; i < ROWS -1; i ++){ // Operations with the filtered matrix
             for(int j = 1; j < COLUMNS-1; j ++){ 
@@ -304,7 +288,7 @@ void sobelMatrix(unsigned char **matrixOriginal, unsigned char **matrixFiltered,
             }
         }
 
-        //showMatrixOrigianl(matrixOriginal);
+        //showMatrix(matrixOriginal);
     
         FILE *f = fopen("filteredImage.raw", "wb"); // write file
         for (int i = 0; i < ROWS -2; i++) {

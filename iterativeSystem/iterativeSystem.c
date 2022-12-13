@@ -8,7 +8,7 @@
 /* Function to validate the number of arguments */
 void argumentsOK(int argc){
      
-     if(argc != 3){ // If argc is diferent of 5 argument --> error
+     if(argc != 3){ // If argc is diferent of 3 argument --> error
         printf("./ite file iterations\n");
         exit(-1);
     }
@@ -28,20 +28,18 @@ double **createMatrix(){ // CREATE DYNAMIC MATRIX
 
 double *createArray(){ // CREATE DYNAMIC ARRAY
     
-    double *arrayIdentity;
-    double *arrayResult;
+    double *array;
 
-    arrayIdentity = (double*)malloc(N * sizeof(double)); // Reserve memory for array
-    arrayResult = (double*)malloc(N * sizeof(double)); // Reserve memory for array
-
-    return arrayIdentity, arrayResult;
+    array = (double*)malloc(N * sizeof(double)); // Reserve memory for array
+   
+    return array;
 
 }
 
-void AddValueArrayIdentity(double *arrayIdentity){ // FILL ARRAY VALUE 1
+void AddValueArrayIdentity(double *array){ // FILL ARRAY VALUE 1
  
     for(int i = 0; i < N; i++){
-        arrayIdentity[i] = (double) 1; // All array = 1.0
+        array[i] = (double) 1; // All array = 1.0
     }
 
 }
@@ -99,9 +97,9 @@ void valueMatrix(double **matrix){ // GIVE VALUES TO THE MATRIX
             if(i == j){ // DIAGONAL VALUES = 1
                 matrix[i][j] = 1.0;
             }else if(i > j){ // POSITIVE VALUE (BOTTOM) 
-                 matrix[i][j] = (double)50*(i+1)*(j+1)/(N+N);
+                matrix[i][j] = (double)50*(i+1)*(j+1)/((double)N*N*10000);;
             }else{ // NEGATIVE VALUE (TOP) 
-                matrix[i][j] = (double)-50*(i+1)*(j+1)/(N+N);
+                matrix[i][j] = (double)-50*(i+1)*(j+1)/((double)N*N*10000);
             }
         }
     }
@@ -112,8 +110,8 @@ void iterations(double **matrix, int m){
    
     int i, j, k, absHigher = 0; //  Declaration of auxiliary variables that are used to perform different operations
     double accumulate = 0; 
-    double absCompare = -DBL_MAX; // Is the value of maximum representable finite floating-point (double) number
-    
+    double absCompare = 0; // Is the value of maximum representable finite floating-point (double) number
+    double absReal;
     double *x1 = createArray(); // Create a array
     double *x2 = createArray(); // Create a new array
     AddValueArrayIdentity(x2); // New array = 1
@@ -125,7 +123,7 @@ void iterations(double **matrix, int m){
         }
         x1[i] = accumulate;
     }
- 
+    //showArray(x1);
     for(k = 1; k < m; k ++){ // Rest of iterations
          
         for(i = 0; i < N; i ++){ // Access each element of the matrix to make the product for each element of the previous vector
@@ -135,23 +133,30 @@ void iterations(double **matrix, int m){
             }
             x2[i] = accumulate;
         }
-
+        //showArray(x2);
+        absCompare = 0;
         for(i = 0; i < N; i ++){ // Get the absolute value and compare it with the auxiliary variable that is updated
             if(absCompare < fabs(x2[i])){
                 absCompare = fabs(x2[i]);
+                absReal = x2[i];
                 absHigher = i; // Tells us the position of the maximum value
             }
         }
-       
-        if(absHigher > 25.0){ // Divide each position of the vector by the element with the largest absolute value.
+        
+        //printf("Data %i: %1.1f (%i) ABSREAL: %1.1f\n", k, absCompare, absHigher, absReal);  // Print the results
+        
+        if(absCompare > 25.0){ // Divide each position of the vector by the element with the largest absolute value.
             for(i = 0; i < N; i ++){
-                x1[i] = x2[i] / x2[absHigher]; // Fill the vector x1 with the results to use it in the next iteration           
+                x2[i] = x2[i] / absReal; // Fill the vector x1 with the results to use it in the next iteration           
             }
         }
-       
-        printf("Max in iteration %i: %e (%i)\n", k, x2[absHigher], absHigher);  // Print the results
+       //showArray(x1);
+        printf("Max in iteration %i: %1.1f (%i)\n", k, absReal, absHigher);  // Print the results
         
-        absCompare=-DBL_MAX; // At the end of the loop we have to reset the value of our variable that finds the largest absolute value
+        for(i = 0; i < N; i ++){
+            x1[i] = x2[i];
+        }
+       
     }
 
     free(x1); // Free memory array
@@ -159,7 +164,7 @@ void iterations(double **matrix, int m){
 
 }
 
-int main(int argc, char *argv[]){ // CONSOLE --> gcc iterativeSystem.c -o it && ./it newFile.bin 5
+int main(int argc, char *argv[]){ // CONSOLE --> gcc iterativeSystem.c -o it && ./it matrix.bin 5
     
     argumentsOK(argc); // Funtion control arguments
 
